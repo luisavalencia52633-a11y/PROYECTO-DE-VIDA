@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Proyecto de Vida – Corazonista Puerto Salgar</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f3ff; min-height: 100vh; }
+  .app { max-width: 680px; margin: 0 auto; padding: 1rem 1rem 3rem; }
+
+  .header { text-align: center; padding: 1.5rem 1rem 0.5rem; }
+  .school-tag { font-size: 12px; color: #888; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 6px; }
+  .section-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .section-intro { font-size: 14px; color: #666; line-height: 1.5; }
+
+  .progress-wrap { background: #e0e0e0; border-radius: 99px; height: 8px; margin: 1rem 0 0.3rem; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; }
+  .progress-label { font-size: 12px; color: #999; text-align: right; margin-bottom: 1.2rem; }
+
+  .card { background: #fff; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card label { font-size: 14px; color: #333; display: block; margin-bottom: 10px; line-height: 1.5; font-weight: 500; }
+  textarea, input[type="text"] { width: 100%; border: 1.5px solid #e0e0e0; border-radius: 10px; padding: 10px 12px; font-size: 14px; font-family: inherit; color: #333; background: #fafafa; resize: vertical; min-height: 80px; line-height: 1.5; transition: border 0.2s; }
+  textarea:focus, input[type="text"]:focus { outline: none; border-color: #a09ee0; background: #fff; }
+  input[type="text"] { min-height: auto; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { padding: 7px 15px; border-radius: 99px; border: 1.5px solid #e0e0e0; font-size: 13px; cursor: pointer; background: #fff; color: #555; transition: all 0.15s; user-select: none; }
+  .chip.selected { color: #fff; border-color: transparent; }
+  .chip:hover { border-color: #bbb; }
+
+  .scale-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 4px; }
+  .scale-btn { width: 42px; height: 42px; border-radius: 10px; border: 1.5px solid #e0e0e0; font-size: 15px; font-weight: 600; cursor: pointer; background: #fafafa; color: #555; transition: all 0.15s; }
+  .scale-btn.selected { color: #fff; border-color: transparent; }
+  .scale-lbl { display: flex; justify-content: space-between; font-size: 11px; color: #aaa; }
+
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+  .btn { padding: 11px 24px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1.5px solid #e0e0e0; background: #fff; color: #555; transition: all 0.15s; }
+  .btn:hover { background: #f5f5f5; }
+  .btn-next { border: none; color: #fff; padding: 11px 28px; font-size: 14px; font-weight: 700; border-radius: 12px; cursor: pointer; transition: opacity 0.15s; }
+  .btn-next:hover { opacity: 0.88; }
+  .btn-invisible { visibility: hidden; }
+
+  .dots { display: flex; gap: 6px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 99px; background: #ddd; transition: all 0.2s; }
+  .dot.active { width: 22px; }
+
+  .finish { text-align: center; padding: 2rem 1rem; }
+  .finish-emoji { font-size: 52px; margin-bottom: 1rem; }
+  .finish h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #333; }
+  .finish p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 1.5rem; }
+  .summary-box { background: #fff; border-radius: 16px; padding: 1.2rem; text-align: left; margin-bottom: 1.2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .sum-sec { margin-bottom: 1rem; }
+  .sum-sec-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .sum-answer { font-size: 13px; color: #555; line-height: 1.5; margin-bottom: 2px; }
+  .restart-btn { padding: 12px 30px; border-radius: 12px; border: none; font-size: 14px; font-weight: 700; cursor: pointer; color: #fff; background: #534AB7; transition: opacity 0.15s; }
+  .restart-btn:hover { opacity: 0.88; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="main-view">
+    <div class="header">
+      <div class="school-tag">Colegio Corazonista · Puerto Salgar, Cundinamarca</div>
+      <div class="section-title" id="stitle"></div>
+      <div class="section-intro" id="sintro"></div>
+      <div class="progress-wrap"><div class="progress-fill" id="pfill"></div></div>
+      <div class="progress-label" id="plabel"></div>
+    </div>
+    <div id="qcontainer"></div>
+    <div class="nav">
+      <button class="btn" id="btnprev" onclick="nav(-1)">← Atrás</button>
+      <div class="dots" id="dots"></div>
+      <button class="btn-next" id="btnnext" onclick="nav(1)">Siguiente →</button>
+    </div>
+  </div>
+
+  <div id="finish-view" class="hidden finish">
+    <div class="finish-emoji">🎉</div>
+    <h2>¡Gracias por compartir tu historia!</h2>
+    <p>Tu voz es parte de algo más grande. Tus respuestas nos ayudarán a construir una <strong>cartografía social</strong> con los sueños, retos y fortalezas de tu comunidad en Puerto Salgar.</p>
+    <div class="summary-box" id="summary"></div>
+    <button class="restart-btn" onclick="restart()">Volver al inicio</button>
+  </div>
+</div>
+
+<script>
+const sections = [
+  {
+    id:"id", title:"🌟 ¿Quién soy?", intro:"Cuéntanos sobre ti — tu esencia, lo que te hace único/a.", color:"#534AB7",
+    questions:[
+      {id:"nombre", type:"text", label:"¿Cuál es tu nombre?"},
+      {id:"palabras", type:"chips", label:"¿Con qué palabras te describes mejor? (selecciona las que quieras)", opts:["Curioso/a","Creativo/a","Empático/a","Líder","Soñador/a","Resiliente","Divertido/a","Tranquilo/a","Apasionado/a","Responsable"]},
+      {id:"fortaleza", type:"textarea", label:"¿Cuál es tu mayor fortaleza? ¿Cómo la usas en tu vida diaria?"},
+      {id:"emocion", type:"chips", label:"¿Cómo te sientes en este momento de tu vida?", opts:["Emocionado/a","Confundido/a","Esperanzado/a","Ansioso/a","Tranquilo/a","Motivado/a","Perdido/a","Seguro/a"]}
+    ]
+  },
+  {
+    id:"mundo", title:"🌍 Mi mundo", intro:"Tu entorno te forma. Cuéntanos sobre tu territorio y las personas que te rodean.", color:"#1D9E75",
+    questions:[
+      {id:"territorio", type:"textarea", label:"Describe Puerto Salgar con tus propias palabras. ¿Qué amas de tu municipio?"},
+      {id:"personas", type:"textarea", label:"¿Quiénes son las personas más importantes en tu vida y por qué?"},
+      {id:"transformar", type:"chips", label:"¿Qué aspectos de tu comunidad te gustaría transformar?", opts:["Educación","Medio ambiente","Seguridad","Recreación","Economía","Cultura","Salud","Participación joven","Infraestructura"]},
+      {id:"conexion", type:"scale", label:"Del 1 al 5, ¿qué tan conectado/a te sientes con tu comunidad?", min:1, max:5}
+    ]
+  },
+  {
+    id:"suenos", title:"🚀 Mis sueños", intro:"El futuro empieza con un sueño. ¡Cuéntanos los tuyos sin límites!", color:"#D4537E",
+    questions:[
+      {id:"sueno_grande", type:"textarea", label:"Si todo fuera posible, ¿cuál sería tu gran sueño de vida?"},
+      {id:"meta_2", type:"textarea", label:"¿Qué quieres lograr en los próximos 2 años?"},
+      {id:"profesion", type:"chips", label:"¿Qué áreas te apasionan o en cuáles te imaginas trabajando?", opts:["Ciencias y tecnología","Arte y cultura","Salud","Educación","Negocios","Derecho","Deporte","Medio ambiente","Trabajo social","Otra"]},
+      {id:"inspiracion", type:"textarea", label:"¿Quién te inspira y por qué?"}
+    ]
+  },
+  {
+    id:"camino", title:"🛤️ Mi camino", intro:"Todo camino tiene retos. Identifiquemos juntos los tuyos y tus recursos.", color:"#BA7517",
+    questions:[
+      {id:"obstaculo", type:"textarea", label:"¿Cuál es el mayor obstáculo que sientes para alcanzar tus metas?"},
+      {id:"apoyo", type:"chips", label:"¿Con qué tipo de apoyo cuentas actualmente?", opts:["Familia","Amigos","Colegio","Comunidad","Fe / espiritualidad","Ninguno aún"]},
+      {id:"habilidad", type:"textarea", label:"¿Qué habilidad te gustaría desarrollar para avanzar en tu proyecto de vida?"},
+      {id:"decision", type:"scale", label:"Del 1 al 5, ¿qué tan seguro/a te sientes al tomar decisiones importantes?", min:1, max:5}
+    ]
+  },
+  {
+    id:"huella", title:"💙 Mi huella", intro:"Eres agente de cambio. ¿Qué quieres dejar en el mundo?", color:"#378ADD",
+    questions:[
+      {id:"impacto", type:"textarea", label:"¿Cómo quisieras impactar positivamente a tu familia, colegio o municipio?"},
+      {id:"legado", type:"textarea", label:"¿Qué quieres que recuerden de ti dentro de 10 años?"},
+      {id:"consejo", type:"textarea", label:"Si pudieras darle un consejo a un estudiante de 13 años, ¿qué le dirías?"},
+      {id:"compromiso", type:"chips", label:"¿Con qué te comprometes hoy para avanzar en tu proyecto de vida?", opts:["Estudiar con más dedicación","Hablar con mis padres","Buscar orientación","Explorar mis talentos","Cuidar mi bienestar","Servir a mi comunidad"]}
+    ]
+  }
+];
+
+let cur = 0;
+let ans = {};
+
+function render() {
+  const s = sections[cur];
+  document.getElementById("stitle").textContent = s.title;
+  document.getElementById("sintro").textContent = s.intro;
+  const pct = Math.round((cur / sections.length) * 100);
+  document.getElementById("pfill").style.cssText = "width:" + pct + "%;background:" + s.color;
+  document.getElementById("plabel").textContent = "Sección " + (cur+1) + " de " + sections.length;
+
+  document.getElementById("dots").innerHTML = sections.map((sec, i) =>
+    '<div class="dot' + (i===cur?" active":"") + '" style="' + (i===cur?"background:"+sec.color:"") + '"></div>'
+  ).join("");
+
+  const prev = document.getElementById("btnprev");
+  prev.className = cur === 0 ? "btn btn-invisible" : "btn";
+
+  const next = document.getElementById("btnnext");
+  next.style.background = s.color;
+  next.textContent = cur === sections.length-1 ? "Finalizar ✓" : "Siguiente →";
+
+  document.getElementById("qcontainer").innerHTML = s.questions.map(q => buildQ(q, s.color)).join("");
+  restore(s);
+}
+
+function buildQ(q, color) {
+  if (q.type === "text") return '<div class="card"><label>' + q.label + '</label><input type="text" id="q_'+q.id+'" placeholder="Escribe aquí..."/></div>';
+  if (q.type === "textarea") return '<div class="card"><label>' + q.label + '</label><textarea id="q_'+q.id+'" placeholder="Escribe aquí..."></textarea></div>';
+  if (q.type === "chips") {
+    const cs = q.opts.map(o => '<div class="chip" data-q="'+q.id+'" data-v="'+encodeURIComponent(o)+'" onclick="toggleChip(this,\''+q.id+'\',\''+color+'\')">'+o+'</div>').join("");
+    return '<div class="card"><label>' + q.label + '</label><div class="chips">' + cs + '</div></div>';
+  }
+  if (q.type === "scale") {
+    const bs = Array.from({length:q.max-q.min+1},(_,i)=>i+q.min).map(n =>
+      '<button class="scale-btn" data-q="'+q.id+'" data-v="'+n+'" onclick="pickScale(this,\''+q.id+'\',\''+color+'\')">'+n+'</button>'
+    ).join("");
+    return '<div class="card"><label>' + q.label + '</label><div class="scale-btns">' + bs + '</div><div class="scale-lbl"><span>Poco</span><span>Mucho</span></div></div>';
+  }
+  return "";
+}
+
+function toggleChip(el, qid, color) {
+  if (!ans[qid]) ans[qid] = [];
+  const v = decodeURIComponent(el.dataset.v);
+  if (el.classList.contains("selected")) {
+    el.classList.remove("selected"); el.style.background = "";
+    ans[qid] = ans[qid].filter(x => x !== v);
+  } else {
+    el.classList.add("selected"); el.style.background = color;
+    ans[qid].push(v);
+  }
+}
+
+function pickScale(el, qid, color) {
+  document.querySelectorAll('.scale-btn[data-q="'+qid+'"]').forEach(b => { b.classList.remove("selected"); b.style.background = ""; });
+  el.classList.add("selected"); el.style.background = color;
+  ans[qid] = el.dataset.v;
+}
+
+function save() {
+  sections[cur].questions.forEach(q => {
+    if (q.type === "text" || q.type === "textarea") {
+      const el = document.getElementById("q_"+q.id);
+      if (el) ans[q.id] = el.value;
+    }
+  });
+}
+
+function restore(s) {
+  s.questions.forEach(q => {
+    if ((q.type==="text"||q.type==="textarea") && ans[q.id]) {
+      const el = document.getElementById("q_"+q.id);
+      if (el) el.value = ans[q.id];
+    }
+    if (q.type==="chips" && ans[q.id]) {
+      ans[q.id].forEach(v => {
+        const chip = document.querySelector('.chip[data-q="'+q.id+'"][data-v="'+encodeURIComponent(v)+'"]');
+        if (chip) { chip.classList.add("selected"); chip.style.background = s.color; }
+      });
+    }
+    if (q.type==="scale" && ans[q.id]) {
+      const btn = document.querySelector('.scale-btn[data-q="'+q.id+'"][data-v="'+ans[q.id]+'"]');
+      if (btn) { btn.classList.add("selected"); btn.style.background = s.color; }
+    }
+  });
+}
+
+function nav(dir) {
+  save();
+  const n = cur + dir;
+  if (n < 0) return;
+  if (n >= sections.length) { showFinish(); return; }
+  cur = n;
+  render();
+  window.scrollTo(0,0);
+}
+
+function showFinish() {
+  document.getElementById("main-view").classList.add("hidden");
+  document.getElementById("finish-view").classList.remove("hidden");
+  document.getElementById("summary").innerHTML = sections.map(s => {
+    const rows = s.questions.map(q => {
+      const a = ans[q.id];
+      if (!a || (Array.isArray(a) && !a.length) || a==="") return "";
+      return '<div class="sum-answer">• ' + (Array.isArray(a)?a.join(", "):a) + '</div>';
+    }).join("");
+    if (!rows) return "";
+    return '<div class="sum-sec"><div class="sum-sec-title" style="color:'+s.color+'">'+s.title+'</div>'+rows+'</div>';
+  }).join("");
+}
+
+function restart() {
+  ans = {}; cur = 0;
+  document.getElementById("finish-view").classList.add("hidden");
+  document.getElementById("main-view").classList.remove("hidden");
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
