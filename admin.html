@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Administrador - Respuestas</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f5f3ff; color: #222; }
+  .container { max-width: 960px; margin: 0 auto; padding: 1.2rem; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 1.2rem; }
+  .actions { display: flex; gap: 8px; }
+  .btn { border: none; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 600; }
+  .btn-primary { background: #534AB7; color: #fff; }
+  .btn-danger { background: #c0392b; color: #fff; }
+  .btn-light { background: #fff; color: #333; border: 1px solid #ddd; text-decoration: none; display: inline-flex; align-items: center; }
+  .meta { font-size: 0.9rem; color: #666; margin-bottom: 12px; }
+  .list { display: grid; gap: 12px; }
+  .card { background: #fff; border-radius: 14px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .card h2 { font-size: 1rem; margin-bottom: 8px; color: #534AB7; }
+  .row { border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 8px; }
+  .q { font-size: 0.85rem; color: #666; margin-bottom: 2px; }
+  .a { font-size: 0.93rem; line-height: 1.5; }
+  .empty { background: #fff; border-radius: 14px; padding: 18px; text-align: center; color: #666; }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Vista de administrador</h1>
+      <div class="actions">
+        <a href="index.html" class="btn btn-light">Volver al formulario</a>
+        <button class="btn btn-primary" onclick="render()">Actualizar</button>
+        <button class="btn btn-danger" onclick="clearAll()">Borrar todo</button>
+      </div>
+    </div>
+    <div class="meta" id="meta"></div>
+    <div class="list" id="list"></div>
+  </div>
+
+<script>
+const STORAGE_KEY = "proyecto_vida_respuestas";
+
+function getData() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  } catch (err) {
+    console.error("Error leyendo localStorage", err);
+    return [];
+  }
+}
+
+function clearAll() {
+  const ok = confirm("Se eliminaran todas las respuestas guardadas. Continuar?");
+  if (!ok) return;
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+function formatValue(value) {
+  if (Array.isArray(value)) return value.join(", ");
+  if (value === null || value === undefined || value === "") return "Sin respuesta";
+  return String(value);
+}
+
+function render() {
+  const list = getData().slice().reverse();
+  const total = list.length;
+  document.getElementById("meta").textContent = "Total de respuestas: " + total;
+
+  const container = document.getElementById("list");
+  if (!total) {
+    container.innerHTML = '<div class="empty">No hay respuestas guardadas todavia.</div>';
+    return;
+  }
+
+  container.innerHTML = list.map((entry, i) => {
+    const date = entry.createdAt ? new Date(entry.createdAt).toLocaleString("es-CO") : "Sin fecha";
+    const answers = entry.answers || {};
+    const rows = Object.keys(answers).map(key => {
+      return '<div class="row"><div class="q">' + key + '</div><div class="a">' + formatValue(answers[key]) + '</div></div>';
+    }).join("");
+
+    return '<div class="card"><h2>Respuesta #' + (total - i) + '</h2><div class="q">Fecha: ' + date + '</div>' + rows + '</div>';
+  }).join("");
+}
+
+render();
+</script>
+</body>
+</html>
