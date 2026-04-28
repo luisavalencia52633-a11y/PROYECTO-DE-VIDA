@@ -18,7 +18,14 @@
   .meta { font-size: 0.9rem; color: #666; margin-bottom: 12px; }
   .list { display: grid; gap: 12px; }
   .card { background: #fff; border-radius: 14px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-  .card h2 { font-size: 1rem; margin-bottom: 8px; color: #534AB7; }
+  .card summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .card summary::-webkit-details-marker { display: none; }
+  .summary-left { display: flex; flex-direction: column; gap: 2px; }
+  .summary-title { font-size: 1rem; color: #534AB7; font-weight: 700; }
+  .summary-date { font-size: 0.85rem; color: #666; }
+  .summary-arrow { font-size: 0.85rem; color: #666; transition: transform 0.2s ease; }
+  .card[open] .summary-arrow { transform: rotate(180deg); }
+  .details-content { margin-top: 8px; }
   .row { border-top: 1px solid #f0f0f0; padding-top: 8px; margin-top: 8px; }
   .q { font-size: 0.85rem; color: #666; margin-bottom: 2px; }
   .a { font-size: 0.93rem; line-height: 1.5; }
@@ -81,8 +88,9 @@ function render() {
     const rows = Object.keys(answers).map(key => {
       return '<div class="row"><div class="q">' + key + '</div><div class="a">' + formatValue(answers[key]) + '</div></div>';
     }).join("");
+    const openAttr = i === 0 ? " open" : "";
 
-    return '<div class="card"><h2>Respuesta #' + (total - i) + '</h2><div class="q">Fecha: ' + date + '</div>' + rows + '</div>';
+    return '<details class="card"' + openAttr + '><summary><div class="summary-left"><div class="summary-title">Respuesta #' + (total - i) + '</div><div class="summary-date">Fecha: ' + date + '</div></div><div class="summary-arrow">▼</div></summary><div class="details-content">' + rows + '</div></details>';
   }).join("");
 }
 
