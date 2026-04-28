@@ -82,10 +82,14 @@
     <p>Tu voz es parte de algo más grande. Tus respuestas nos ayudarán a construir una <strong>cartografía social</strong> con los sueños, retos y fortalezas de tu comunidad en Puerto Salgar.</p>
     <div class="summary-box" id="summary"></div>
     <button class="restart-btn" onclick="restart()">Volver al inicio</button>
+    <div style="margin-top:12px;">
+      <a href="admin.html" style="font-size:13px; color:#534AB7; text-decoration:none; font-weight:600;">Ver vista de administrador</a>
+    </div>
   </div>
 </div>
 
 <script>
+const STORAGE_KEY = "proyecto_vida_respuestas";
 const sections = [
   {
     id:"id", title:"🌟 ¿Quién soy?", intro:"Cuéntanos sobre ti — tu esencia, lo que te hace único/a.", color:"#534AB7",
@@ -136,6 +140,20 @@ const sections = [
 
 let cur = 0;
 let ans = {};
+
+function saveSubmission() {
+  try {
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    list.push({
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      answers: ans
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.error("No se pudo guardar en localStorage", err);
+  }
+}
 
 function render() {
   const s = sections[cur];
@@ -233,6 +251,7 @@ function nav(dir) {
 }
 
 function showFinish() {
+  saveSubmission();
   document.getElementById("main-view").classList.add("hidden");
   document.getElementById("finish-view").classList.remove("hidden");
   document.getElementById("summary").innerHTML = sections.map(s => {
